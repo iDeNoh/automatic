@@ -22,6 +22,9 @@ python = sys.executable # used by some extensions to run python
 skip_install = False # parsed by some extensions
 
 
+sys.modules["torch._dynamo"] = {} # torch 1.13.1 hack. will be removed.
+
+
 def init_modules():
     global parser, args, script_path, extensions_dir # pylint: disable=global-statement
     import modules.cmd_args
