@@ -1,5 +1,6 @@
 import os
 import sys
+import olive.workflows
 from modules import paths_internal, errors
 
 

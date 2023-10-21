@@ -870,6 +870,9 @@ def load_diffuser(checkpoint_info=None, already_loaded_state_dict=None, timer=No
             if err3 is not None:
                 shared.log.error(f'Failed loading {op}: {checkpoint_info.path} auto={err1} diffusion={err2}')
                 return
+            if 'Olive' in shared.opts.diffusers_pipeline:
+                from modules.olive import OlivePipeline
+                sd_model = OlivePipeline.from_pretrained(checkpoint_info.path, cache_dir=shared.opts.diffusers_dir, **diffusers_load_config)
         elif os.path.isfile(checkpoint_info.path) and checkpoint_info.path.lower().endswith('.safetensors'):
             diffusers_load_config["local_files_only"] = True
             diffusers_load_config["extract_ema"] = shared.opts.diffusers_extract_ema
