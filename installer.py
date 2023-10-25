@@ -592,6 +592,7 @@ def install_packages():
 
 # clone required repositories
 def install_repositories():
+    """
     if args.profile:
         pr = cProfile.Profile()
         pr.enable()
@@ -616,6 +617,7 @@ def install_repositories():
     clone(blip_repo, d('BLIP'), blip_commit)
     if args.profile:
         print_profile(pr, 'Repositories')
+    """
 
 
 # run extension installer

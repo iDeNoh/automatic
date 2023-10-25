@@ -39,6 +39,7 @@ def get_pipelines():
         'Stable Diffusion XL Inpaint': getattr(diffusers, 'StableDiffusionXLInpaintPipeline', None),
         'Stable Diffusion XL Instruct': getattr(diffusers, 'StableDiffusionXLInstructPix2PixPipeline', None),
         'ONNX Stable Diffusion (Olive)': OlivePipeline,
+        'Custom Diffusers Pipeline': getattr(diffusers, 'DiffusionPipeline', None),
         # 'Test': getattr(diffusers, 'TestPipeline', None),
         # 'Kandinsky V1', 'Kandinsky V2', 'DeepFloyd IF', 'Shap-E', 'Kandinsky V1 Img2Img', 'Kandinsky V2 Img2Img', 'DeepFloyd IF Img2Img', 'Shap-E Img2Img',
     }
