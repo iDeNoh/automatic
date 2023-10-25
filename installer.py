@@ -357,6 +357,7 @@ def check_torch():
     log.debug(f'Torch allowed: cuda={allow_cuda} rocm={allow_rocm} ipex={allow_ipex} diml={allow_directml} openvino={allow_openvino}')
     torch_command = os.environ.get('TORCH_COMMAND', '')
     xformers_package = os.environ.get('XFORMERS_PACKAGE', 'none')
+    install('onnxruntime', 'onnxruntime')
     if torch_command != '':
         pass
     elif allow_cuda and (shutil.which('nvidia-smi') is not None or args.use_xformers or os.path.exists(os.path.join(os.environ.get('SystemRoot') or r'C:\Windows', 'System32', 'nvidia-smi.exe'))):
@@ -366,6 +367,7 @@ def check_torch():
         else:
             torch_command = os.environ.get('TORCH_COMMAND', 'torch torchvision --index-url https://download.pytorch.org/whl/cu118')
         xformers_package = os.environ.get('XFORMERS_PACKAGE', '--pre xformers' if opts.get('cross_attention_optimization', '') == 'xFormers' else 'none')
+        install('onnxruntime-gpu', 'onnxruntime-gpu')
     elif allow_rocm and (shutil.which('rocminfo') is not None or os.path.exists('/opt/rocm/bin/rocminfo') or os.path.exists('/dev/kfd')):
         log.info('AMD ROCm toolkit detected')
         os.environ.setdefault('PYTORCH_HIP_ALLOC_CONF', 'garbage_collection_threshold:0.8,max_split_size_mb:512')
@@ -430,6 +432,7 @@ def check_torch():
             torchvision_pip = 'https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.0.110%2Bxpu-master%2Bdll-bundle/torchvision-0.15.2a0+fa99a53-cp310-cp310-win_amd64.whl'
             ipex_pip = 'https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.0.110%2Bxpu-master%2Bdll-bundle/intel_extension_for_pytorch-2.0.110+gitc6ea20b-cp310-cp310-win_amd64.whl'
             torch_command = os.environ.get('TORCH_COMMAND', f'{pytorch_pip} {torchvision_pip} {ipex_pip}')
+        install('onnxruntime-openvino')
     elif allow_openvino and args.use_openvino:
         log.info('Using OpenVINO')
         if "linux" in sys.platform:
@@ -463,6 +466,7 @@ def check_torch():
                 pytorch_pip = 'torch==2.1.0'
                 torchvision_pip = 'torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu'
         torch_command = os.environ.get('TORCH_COMMAND', f'{pytorch_pip} {torchvision_pip}')
+        install('onnxruntime-openvino', 'onnxruntime-openvino')
     else:
         machine = platform.machine()
         if sys.platform == 'darwin':
@@ -472,6 +476,7 @@ def check_torch():
             torch_command = os.environ.get('TORCH_COMMAND', 'torch-directml')
             if 'torch' in torch_command and not args.version:
                 install(torch_command, 'torch torchvision')
+            install('onnxruntime-directml', 'onnxruntime-directml')
         else:
             log.info('Using CPU-only Torch')
             torch_command = os.environ.get('TORCH_COMMAND', 'torch torchvision')
@@ -572,8 +577,7 @@ def install_packages():
     install(clip_package, 'clip')
     invisiblewatermark_package = os.environ.get('INVISIBLEWATERMARK_PACKAGE', "git+https://github.com/patrickvonplaten/invisible-watermark.git@remove_onnxruntime_depedency")
     install(invisiblewatermark_package, 'invisible-watermark')
-    install('olive-ai[directml]', 'olive-ai', ignore=True)
-    install('onnxruntime-directml==1.16.1', 'onnxruntime-directml', ignore=True)
+    install('olive-ai', 'olive-ai', ignore=True)
     install('pi-heif', 'pi_heif', ignore=True)
     tensorflow_package = os.environ.get('TENSORFLOW_PACKAGE', 'tensorflow==2.13.0')
     install(tensorflow_package, 'tensorflow-rocm' if 'rocm' in tensorflow_package else 'tensorflow', ignore=True)

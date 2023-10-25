@@ -22,7 +22,10 @@ python = sys.executable # used by some extensions to run python
 skip_install = False # parsed by some extensions
 
 
-sys.modules["torch._dynamo"] = {} # torch 1.13.1 hack. will be removed.
+try:
+    import torch._dynamo
+except ModuleNotFoundError:
+    sys.modules["torch._dynamo"] = {} # HACK torch 1.13.1 does not have _dynamo. will be removed.
 
 
 def init_modules():

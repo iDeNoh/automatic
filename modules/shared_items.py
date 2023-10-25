@@ -26,7 +26,7 @@ def list_crossattention():
 
 def get_pipelines():
     import diffusers
-    from modules.olive import OlivePipeline
+    from modules.olive import OnnxStableDiffusionPipeline, OlivePipeline
     from installer import log
     pipelines = {
         'Autodetect': None,
@@ -38,7 +38,8 @@ def get_pipelines():
         'Stable Diffusion XL Img2Img': getattr(diffusers, 'StableDiffusionXLImg2ImgPipeline', None),
         'Stable Diffusion XL Inpaint': getattr(diffusers, 'StableDiffusionXLInpaintPipeline', None),
         'Stable Diffusion XL Instruct': getattr(diffusers, 'StableDiffusionXLInstructPix2PixPipeline', None),
-        'ONNX Stable Diffusion (Olive)': OlivePipeline,
+        'ONNX Stable Diffusion': OnnxStableDiffusionPipeline,
+        'ONNX Stable Diffusion with Olive': OlivePipeline,
         'Custom Diffusers Pipeline': getattr(diffusers, 'DiffusionPipeline', None),
         # 'Test': getattr(diffusers, 'TestPipeline', None),
         # 'Kandinsky V1', 'Kandinsky V2', 'DeepFloyd IF', 'Shap-E', 'Kandinsky V1 Img2Img', 'Kandinsky V2 Img2Img', 'DeepFloyd IF Img2Img', 'Shap-E Img2Img',
