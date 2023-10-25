@@ -38,10 +38,10 @@ tr { border-bottom: none !important; padding: 0.1em 0.5em !important; }
 .gradio-html .min { min-height: 0; }
 .gradio-html div.wrap { height: 100%; }
 .gradio-number { min-width: unset !important; max-width: 5em !important; }
-.gradio-slider { max-width: 50%; margin-right: var(--spacing-sm) !important; }
-.gradio-slider input[type="number"] { width: 6em; margin-left: 0.5em; }
 .gradio-textbox { overflow: visible !important; }
-.gradio-radio { padding: 0 !important; }
+.gradio-radio { padding: 0 !important; width: max-content !important; }
+.gradio-slider { margin-right: var(--spacing-sm) !important; width: max-content !important }
+.gradio-slider input[type="number"] { width: 6em; font-size: 0.8rem; height: 20px; margin-left: 0.5em; }
 
 /* custom gradio elements */
 .accordion-compact { padding: 8px 0px 4px 0px !important; }
@@ -93,7 +93,7 @@ div#extras_scale_to_tab div.form{ flex-direction: row; }
 .image-buttons button{ min-width: auto; }
 .infotext { overflow-wrap: break-word; }
 .tooltip { display: block; position: fixed; top: 1em; right: 1em; padding: 0.5em; background: var(--input-background-fill); color: var(--body-text-color); border: 1pt solid var(--button-primary-border-color);
-  width: 22em; min-height: 1.3em; font-size: 0.8em; transition: opacity 0.2s ease-in; pointer-events: none; opacity: 0; z-index: var(--layer-2); }
+  width: 22em; min-height: 1.3em; font-size: 0.8em; transition: opacity 0.2s ease-in; pointer-events: none; opacity: 0; z-index: 999; }
 .tooltip-show { opacity: 0.9; }
 .toolbutton-selected { background: var(--background-fill-primary) !important; }
 .jobStatus { position: fixed; bottom: 1em; right: 1em; background: var(--input-background-fill); padding: 0.4em; font-size: 0.8em; color: var(--body-text-color-subdued); }
@@ -175,7 +175,7 @@ table.settings-value-table td { padding: 0.4em; border: 1px solid #ccc; max-widt
 #extensions .date{ opacity: 0.85; font-size: 90%; }
 
 /* extra networks */
-.extra-networks > div { margin: 0; gap: 0.2em; border-bottom: none !important; }
+.extra-networks > div { margin: 0; border-bottom: none !important; gap: 0.3em 0; }
 .extra-networks .second-line { display: flex; width: -moz-available; width: -webkit-fill-available; gap: 0.3em; box-shadow: var(--input-shadow); }
 .extra-networks .search { flex: 1; }
 .extra-networks .description { flex: 3; }
