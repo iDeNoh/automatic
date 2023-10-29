@@ -14,6 +14,7 @@ from rich.console import Console
 from modules import errors, shared_items, shared_state, cmd_args, ui_components, theme
 from modules.paths_internal import models_path, script_path, data_path, sd_configs_path, sd_default_config, sd_model_file, default_sd_model_file, extensions_dir, extensions_builtin_dir # pylint: disable=W0611
 from modules.dml import memory_providers, default_memory_provider, directml_do_hijack
+from modules.onnx import available_execution_providers, get_default_execution_provider
 import modules.interrogate
 import modules.memmon
 import modules.styles
@@ -345,10 +346,10 @@ options_templates.update(options_section(('diffusers', "Diffusers Settings"), {
     "diffusers_force_inpaint": OptionInfo(False, 'Diffusers force inpaint pipeline'),
     "diffusers_pooled": OptionInfo("default", "Diffusers SDXL pooled embeds (experimental)", gr.Radio, {"choices": ['default', 'weighted']}),
 
-    "olive_sep": OptionInfo("<h2>Olive</h2>", "", gr.HTML),
-    "olive_float16": OptionInfo(True, 'Use FP16 (will use FP32 if unchecked)'),
-    "olive_cache_optimized": OptionInfo(True, 'Cache optimized models'),
-    "olive_garbage_collect": OptionInfo(False, 'Collect garbage at the end of each generation'),
+    "onnx_sep": OptionInfo("<h2>ONNX Runtime</h2>", "", gr.HTML),
+    "onnx_execution_provider": OptionInfo(get_default_execution_provider(), 'Execution Provider', gr.Dropdown, lambda: {"choices": available_execution_providers }),
+    "onnx_olive_float16": OptionInfo(True, 'Use FP16 on Olive optimization (will use FP32 if unchecked)'),
+    "onnx_cache_optimized": OptionInfo(True, 'Cache Olive optimized models'),
 }))
 
 options_templates.update(options_section(('system-paths', "System Paths"), {
