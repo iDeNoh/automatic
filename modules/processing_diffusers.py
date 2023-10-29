@@ -17,7 +17,7 @@ import modules.errors as errors
 from modules.processing import StableDiffusionProcessing
 import modules.prompt_parser_diffusers as prompt_parser_diffusers
 from modules.sd_hijack_hypertile import hypertile_set
-from modules.olive import OlivePipeline
+from modules.onnx import OlivePipeline
 
 
 def process_diffusers(p: StableDiffusionProcessing, seeds, prompts, negative_prompts):
