@@ -3,7 +3,6 @@ import os
 import sys
 import json
 import argparse
-import olive.workflows
 from modules.errors import log
 
 # parse args, parse again after we have the data-dir and early-read the config file
