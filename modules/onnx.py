@@ -322,8 +322,10 @@ class OlivePipeline(diffusers.DiffusionPipeline):
 
                 with open(os.path.join(sd_configs_path, "olive", f"config_{submodel}.json"), "r") as config_file:
                     olive_config = json.load(config_file)
-                olive_config["engine"]["execution_providers"] = [shared.opts.onnx_execution_provider]
                 olive_config["passes"]["optimize"]["config"]["float16"] = shared.opts.onnx_olive_float16
+                if submodel == "unet" and (shared.opts.onnx_execution_provider == ExecutionProvider.CUDA or shared.opts.onnx_execution_provider == ExecutionProvider.ROCm):
+                    olive_config["passes"]["optimize"]["config"]["optimization_options"]["group_norm_channels_last"] = True
+                olive_config["engine"]["execution_providers"] = [shared.opts.onnx_execution_provider]
 
                 run(olive_config)
 
