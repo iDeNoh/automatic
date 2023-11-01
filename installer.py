@@ -477,7 +477,6 @@ def check_torch():
                 pytorch_pip = 'torch==2.1.0'
                 torchvision_pip = 'torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu'
         torch_command = os.environ.get('TORCH_COMMAND', f'{pytorch_pip} {torchvision_pip}')
-        install('onnxruntime-openvino', 'onnxruntime-openvino')
     else:
         machine = platform.machine()
         if sys.platform == 'darwin':
