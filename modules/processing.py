@@ -80,7 +80,7 @@ def create_binary_mask(image):
     return image
 
 
-def images_tensor_to_samples(image, approximation=None, model=None):
+def images_tensor_to_samples(image, approximation=None, model=None): # pylint: disable=unused-argument
     if model is None:
         model = shared.sd_model
     model.first_stage_model.to(devices.dtype_vae)
@@ -481,7 +481,7 @@ def decode_first_stage(model, x, full_quality=True):
             else:
                 x_sample = torch.zeros((len(x), 3, x.shape[2] * 8, x.shape[3] * 8), dtype=devices.dtype_vae, device=devices.device)
                 for i in range(len(x_sample)):
-                    x_sample[i] = (modules.taesd.sd_vae_taesd.decode(x[i]) * 2.0) - 1.0
+                    x_sample[i] = modules.taesd.sd_vae_taesd.decode(x[i])
         except Exception as e:
             x_sample = x
             shared.log.error(f'Decode VAE: {e}')
@@ -939,7 +939,7 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
             devices.torch_gc()
 
         t1 = time.time()
-        shared.log.info(f'Processed: images={len(output_images)} time={t1 - t0:.2f}s its={(p.steps * len(output_images)) / (t1 - t0):.2f} memory={modules.memstats.memory_stats()}')
+        shared.log.info(f'Processed: images={len(output_images)} time={t1 - t0:.2f} its={(p.steps * len(output_images)) / (t1 - t0):.2f} memory={modules.memstats.memory_stats()}')
 
         p.color_corrections = None
         index_of_first_image = 0
@@ -1123,6 +1123,7 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
                 if shared.opts.sd_vae_sliced_encode and len(decoded_samples) > 1:
                     samples = torch.stack([self.sd_model.get_first_stage_encoding(self.sd_model.encode_first_stage(torch.unsqueeze(resized_sample, 0)))[0] for resized_sample in resized_samples])
                 else:
+                    # TODO add TEASD support
                     samples = self.sd_model.get_first_stage_encoding(self.sd_model.encode_first_stage(resized_samples))
                 image_conditioning = self.img2img_image_conditioning(resized_samples, samples)
             else:

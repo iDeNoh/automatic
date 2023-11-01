@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import time
@@ -28,17 +30,25 @@ except ModuleNotFoundError:
     sys.modules["torch._dynamo"] = {} # HACK torch 1.13.1 does not have _dynamo. will be removed.
 
 
-def init_modules():
-    global parser, args, script_path, extensions_dir # pylint: disable=global-statement
+def init_olive():
     try:
         import olive.workflows # pylint: disable=unused-import
     except ModuleNotFoundError:
         pass
+
+
+def init_args():
+    global parser, args # pylint: disable=global-statement
     import modules.cmd_args
     parser = modules.cmd_args.parser
     installer.add_args(parser)
     args, _ = parser.parse_known_args()
+
+
+def init_paths():
+    global script_path, extensions_dir # pylint: disable=global-statement
     import modules.paths
+    modules.paths.register_paths()
     script_path = modules.paths.script_path
     extensions_dir = modules.paths.extensions_dir
 
@@ -150,7 +160,6 @@ def start_server(immediate=True, server=None):
     if collected > 0:
         installer.log.debug(f'Memory {get_memory_stats()} Collected {collected}')
     module_spec = importlib.util.spec_from_file_location('webui', 'webui.py')
-    # installer.log.debug(f'Loading module: {module_spec}')
     server = importlib.util.module_from_spec(module_spec)
     installer.log.debug(f'Starting module: {server}')
     get_custom_args()
@@ -171,7 +180,8 @@ def start_server(immediate=True, server=None):
 
 if __name__ == "__main__":
     installer.ensure_base_requirements()
-    init_modules() # setup argparser and default folders
+    init_olive() # temporal.
+    init_args() # setup argparser and default folders
     installer.args = args
     installer.setup_logging()
     installer.log.info('Starting SD.Next')
@@ -196,18 +206,22 @@ if __name__ == "__main__":
         installer.log.info('Forcing reinstall of all packages')
         installer.quick_allowed = False
     if args.skip_all:
-        installer.log.info('Skipping all checks')
+        installer.log.info('Startup: skip all')
         installer.quick_allowed = True
+        init_paths()
     elif installer.check_timestamp():
-        installer.log.info('No changes detected: quick launch active')
+        installer.log.info('Startup: quick launch')
         installer.install_requirements()
         installer.install_packages()
+        init_paths()
         installer.check_extensions()
     else:
+        installer.log.info('Startup: standard')
         installer.install_requirements()
         installer.install_packages()
         installer.install_repositories()
         installer.install_submodules()
+        init_paths()
         installer.install_extensions()
         installer.install_requirements() # redo requirements since extensions may change them
         installer.update_wiki()
@@ -233,7 +247,7 @@ if __name__ == "__main__":
         if round(time.time()) % 120 == 0:
             state = f'job="{instance.state.job}" {instance.state.job_no}/{instance.state.job_count}' if instance.state.job != '' or instance.state.job_no != 0 or instance.state.job_count != 0 else 'idle'
             uptime = round(time.time() - instance.state.server_start)
-            installer.log.debug(f'Server alive={alive} jobs={instance.state.total_jobs} requests={requests} uptime={uptime}s memory {get_memory_stats()} {state}')
+            installer.log.debug(f'Server alive={alive} jobs={instance.state.total_jobs} requests={requests} uptime={uptime} memory {get_memory_stats()} {state}')
         if not alive:
             if uv is not None and uv.wants_restart:
                 installer.log.info('Server restarting...')

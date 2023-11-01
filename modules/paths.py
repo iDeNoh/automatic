@@ -1,9 +1,10 @@
-# this module must not have any dependencies as it first import
+# this module must not have any dependencies as it is a very first import before webui even starts
 import os
 import sys
 import json
 import argparse
 from modules.errors import log
+
 
 # parse args, parse again after we have the data-dir and early-read the config file
 parser = argparse.ArgumentParser(add_help=False)
@@ -18,7 +19,6 @@ try:
     with open(config_path, 'r', encoding='utf8') as f:
         config = json.load(f)
 except Exception as err:
-    print(f'Error loading config file: ${config_path} {err}')
     config = {}
 
 modules_path = os.path.dirname(os.path.realpath(__file__))
@@ -33,43 +33,31 @@ sd_default_config = os.path.join(sd_configs_path, "v1-inference.yaml")
 sd_model_file = cli.ckpt or os.path.join(script_path, 'model.ckpt') # not used
 default_sd_model_file = sd_model_file # not used
 debug = log.info if os.environ.get('SD_PATH_DEBUG', None) is not None else lambda *args, **kwargs: None
+paths = {}
 
 if os.environ.get('SD_PATH_DEBUG', None) is not None:
     print(f'Paths: script-path="{script_path}" data-dir="{data_path}" models-dir="{models_path}" config="{config_path}"')
 
-"""
-data_path = paths_internal.data_path
-script_path = paths_internal.script_path
-models_path = paths_internal.models_path
-sd_configs_path = paths_internal.sd_configs_path
-sd_default_config = paths_internal.sd_default_config
-sd_model_file = paths_internal.sd_model_file
-default_sd_model_file = paths_internal.default_sd_model_file
-extensions_dir = paths_internal.extensions_dir
-extensions_builtin_dir = paths_internal.extensions_builtin_dir
-"""
 
-sys.path.insert(0, script_path)
-
-sd_path = os.path.join(script_path, 'repositories')
-path_dirs = [
-    (sd_path, 'ldm', 'ldm', []),
-    (sd_path, 'taming', 'Taming Transformers', []),
-    (os.path.join(sd_path, 'blip'), 'models/blip.py', 'BLIP', []),
-    (os.path.join(sd_path, 'codeformer'), 'inference_codeformer.py', 'CodeFormer', []),
-    (os.path.join('modules', 'k-diffusion'), 'k_diffusion/sampling.py', 'k_diffusion', ["atstart"]),
-]
-
-paths = {}
-
-for d, must_exist, what, _options in path_dirs:
-    must_exist_path = os.path.abspath(os.path.join(script_path, d, must_exist))
-    if not os.path.exists(must_exist_path):
-        log.error(f'Required path not found: path={must_exist_path} item={what}')
-    else:
-        d = os.path.abspath(d)
-        sys.path.append(d)
-        paths[what] = d
+def register_paths():
+    log.debug('Register paths')
+    sys.path.insert(0, script_path)
+    sd_path = os.path.join(script_path, 'repositories')
+    path_dirs = [
+        (sd_path, 'ldm', 'ldm', []),
+        (sd_path, 'taming', 'Taming Transformers', []),
+        (os.path.join(sd_path, 'blip'), 'models/blip.py', 'BLIP', []),
+        (os.path.join(sd_path, 'codeformer'), 'inference_codeformer.py', 'CodeFormer', []),
+        (os.path.join(modules_path, 'k-diffusion'), 'k_diffusion/sampling.py', 'k_diffusion', ["atstart"]),
+    ]
+    for d, must_exist, what, _options in path_dirs:
+        must_exist_path = os.path.abspath(os.path.join(script_path, d, must_exist))
+        if not os.path.exists(must_exist_path):
+            log.error(f'Required path not found: path={must_exist_path} item={what}')
+        else:
+            d = os.path.abspath(d)
+            sys.path.append(d)
+            paths[what] = d
 
 
 def create_path(folder):
@@ -79,9 +67,9 @@ def create_path(folder):
         return
     try:
         os.makedirs(folder, exist_ok=True)
-        log.info(f'Create folder={folder}')
+        log.info(f'Create: folder="{folder}"')
     except Exception as e:
-        log.error(f'Create Failed folder={folder} {e}')
+        log.error(f'Create failed: folder="{folder}" {e}')
 
 
 def create_paths(opts):
@@ -96,7 +84,7 @@ def create_paths(opts):
             fix = os.path.abspath(fix)
         fix = fix if os.path.isabs(fix) else os.path.relpath(fix, script_path)
         opts.data[folder] = fix
-        debug(f'Paths: folder={folder} original="{tgt}" target="{fix}"')
+        debug(f'Paths: folder="{folder}" original="{tgt}" target="{fix}"')
         return opts.data[folder]
 
     create_path(data_path)
