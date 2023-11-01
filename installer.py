@@ -432,7 +432,9 @@ def check_torch():
             torchvision_pip = 'https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.0.110%2Bxpu-master%2Bdll-bundle/torchvision-0.15.2a0+fa99a53-cp310-cp310-win_amd64.whl'
             ipex_pip = 'https://github.com/Nuullll/intel-extension-for-pytorch/releases/download/v2.0.110%2Bxpu-master%2Bdll-bundle/intel_extension_for_pytorch-2.0.110+gitc6ea20b-cp310-cp310-win_amd64.whl'
             torch_command = os.environ.get('TORCH_COMMAND', f'{pytorch_pip} {torchvision_pip} {ipex_pip}')
-        install('onnxruntime-openvino')
+        if sys.version_info[1] != 11:
+            install('openvino==2023.2.0.dev20230922', 'openvino')
+            install('onnxruntime-openvino') # TODO numpy version conflicts with tensorflow and doesn't support Python 3.11
     elif allow_openvino and args.use_openvino:
         log.info('Using OpenVINO')
         if "linux" in sys.platform:
@@ -540,6 +542,8 @@ def check_torch():
         install('hidet', 'hidet')
     if args.use_openvino or opts.get('cuda_compile_backend', '') == 'openvino_fx':
         install('openvino==2023.2.0.dev20230922', 'openvino')
+        if sys.version_info[1] != 11:
+            install('onnxruntime-openvino') # TODO numpy version conflicts with tensorflow and doesn't support Python 3.11
         os.environ.setdefault('PYTORCH_TRACING_MODE', 'TORCHFX')
         os.environ.setdefault('NEOReadDebugKeys', '1')
         os.environ.setdefault('ClDeviceGlobalMemSizeAvailablePercent', '100')
