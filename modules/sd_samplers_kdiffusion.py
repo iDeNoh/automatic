@@ -15,7 +15,8 @@ from modules.script_callbacks import AfterCFGCallbackParams, cfg_after_cfg_callb
 # deal with k-diffusion imports
 k_sampling = None
 try:
-    import k_diffusion.sampling as k_sampling # pylint: disable=wrong-import-order
+    import k_diffusion # pylint: disable=wrong-import-order
+    k_sampling = k_diffusion.sampling
 except ImportError:
     pass
 try:
@@ -23,7 +24,7 @@ try:
         import importlib
         k_diffusion = importlib.import_module('modules.k-diffusion.k_diffusion')
         k_sampling = k_diffusion.sampling
-except:
+except Exception:
     pass
 if k_sampling is None:
     shared.log.info(f'Path search: {sys.path}')
