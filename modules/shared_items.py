@@ -26,7 +26,8 @@ def list_crossattention():
 
 def get_pipelines():
     import diffusers
-    from modules.onnx import OnnxStableDiffusionPipeline, OlivePipeline
+    from modules.onnx import OnnxStableDiffusionPipeline
+    from modules.olive import OlivePipeline, is_available as is_olive_available
     from installer import log
     pipelines = {
         'Autodetect': None,
@@ -44,6 +45,8 @@ def get_pipelines():
         # 'Test': getattr(diffusers, 'TestPipeline', None),
         # 'Kandinsky V1', 'Kandinsky V2', 'DeepFloyd IF', 'Shap-E', 'Kandinsky V1 Img2Img', 'Kandinsky V2 Img2Img', 'DeepFloyd IF Img2Img', 'Shap-E Img2Img',
     }
+    if not is_olive_available:
+        del pipelines['ONNX Stable Diffusion with Olive']
     for k, v in pipelines.items():
         if k != 'Autodetect' and v is None:
             log.error(f'Not available: pipeline={k} diffusers={diffusers.__version__} path={diffusers.__file__}')

@@ -34,6 +34,10 @@ def init_modules():
     parser = modules.cmd_args.parser
     installer.add_args(parser)
     args, _ = parser.parse_known_args()
+    try:
+        import olive.workflows # pylint: disable=unused-import
+    except ModuleNotFoundError:
+        pass
     import modules.paths
     script_path = modules.paths.script_path
     extensions_dir = modules.paths.extensions_dir
