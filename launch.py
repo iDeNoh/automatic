@@ -30,14 +30,14 @@ except ModuleNotFoundError:
 
 def init_modules():
     global parser, args, script_path, extensions_dir # pylint: disable=global-statement
-    import modules.cmd_args
-    parser = modules.cmd_args.parser
-    installer.add_args(parser)
-    args, _ = parser.parse_known_args()
     try:
         import olive.workflows # pylint: disable=unused-import
     except ModuleNotFoundError:
         pass
+    import modules.cmd_args
+    parser = modules.cmd_args.parser
+    installer.add_args(parser)
+    args, _ = parser.parse_known_args()
     import modules.paths
     script_path = modules.paths.script_path
     extensions_dir = modules.paths.extensions_dir
