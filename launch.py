@@ -32,9 +32,11 @@ except ModuleNotFoundError:
 
 def init_olive():
     try:
-        import olive.workflows # pylint: disable=unused-import
-    except ModuleNotFoundError:
-        pass
+        if installer.opts['onnx_enable_olive']:
+            import olive.workflows # pylint: disable=unused-import
+            installer.log.debug('Load olive')
+    except Exception as e:
+        installer.log.error(f'Failed to load olive: {e}')
 
 
 def init_args():
@@ -180,7 +182,6 @@ def start_server(immediate=True, server=None):
 
 if __name__ == "__main__":
     installer.ensure_base_requirements()
-    init_olive() # temporal.
     init_args() # setup argparser and default folders
     installer.args = args
     installer.setup_logging()
@@ -190,6 +191,7 @@ if __name__ == "__main__":
     except Exception:
         pass
     installer.read_options()
+    init_olive()
     if args.skip_all:
         args.quick = True
     installer.check_python()
