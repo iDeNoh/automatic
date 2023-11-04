@@ -126,7 +126,7 @@ def process_interrogate(interrogation_function, mode, ii_input_files, ii_input_d
             images = [f.name for f in ii_input_files]
         else:
             if not os.path.isdir(ii_input_dir):
-                log.error(f"Input directory not found: {ii_input_dir}")
+                log.error(f"Interrogate: Input directory not found: {ii_input_dir}")
                 return [gr.update(), None]
             images = modules.shared.listfiles(ii_input_dir)
         if ii_output_dir != "":
@@ -142,6 +142,9 @@ def process_interrogate(interrogation_function, mode, ii_input_files, ii_input_d
 
 
 def interrogate(image):
+    if image is None:
+        log.error("Interrogate: no image selected")
+        return gr.update()
     prompt = modules.shared.interrogator.interrogate(image.convert("RGB"))
     return gr.update() if prompt is None else prompt
 
@@ -271,6 +274,8 @@ def create_toprow(is_img2img):
                 negative_token_button = gr.Button(visible=False, elem_id=f"{id_part}_negative_token_button")
             with gr.Row(elem_id=f"{id_part}_styles_row"):
                 prompt_styles = gr.Dropdown(label="Styles", elem_id=f"{id_part}_styles", choices=[style.name for style in modules.shared.prompt_styles.styles.values()], value=[], multiselect=True)
+                prompt_styles_btn_refresh = ToolButton(symbols.refresh, elem_id=f"{id_part}_styles_refresh", visible=True)
+                prompt_styles_btn_refresh.click(fn=lambda: gr.update(choices=[style.name for style in modules.shared.prompt_styles.styles.values()]), inputs=[], outputs=[prompt_styles])
                 prompt_styles_btn_select = gr.Button('Select', elem_id=f"{id_part}_styles_select", visible=False)
                 prompt_styles_btn_select.click(_js="applyStyles", fn=parse_style, inputs=[prompt_styles], outputs=[prompt_styles])
                 prompt_styles_btn_apply = ToolButton(symbols.apply, elem_id=f"{id_part}_extra_apply", visible=False)

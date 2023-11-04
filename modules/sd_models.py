@@ -204,13 +204,13 @@ def list_models():
 def update_model_hashes():
     txt = []
     lst = [ckpt for ckpt in checkpoints_list.values() if ckpt.hash is None]
-    shared.log.info(f'Models list: short hash missing for {len(lst)} out of {len(checkpoints_list)} models')
+    # shared.log.info(f'Models list: short hash missing for {len(lst)} out of {len(checkpoints_list)} models')
     for ckpt in lst:
         ckpt.hash = model_hash(ckpt.filename)
-        txt.append(f'Calculated short hash: <b>{ckpt.title}</b> {ckpt.hash}')
-    txt.append(f'Updated short hashes for <b>{len(lst)}</b> out of <b>{len(checkpoints_list)}</b> models')
+        # txt.append(f'Calculated short hash: <b>{ckpt.title}</b> {ckpt.hash}')
+    # txt.append(f'Updated short hashes for <b>{len(lst)}</b> out of <b>{len(checkpoints_list)}</b> models')
     lst = [ckpt for ckpt in checkpoints_list.values() if ckpt.sha256 is None or ckpt.shorthash is None]
-    shared.log.info(f'Models list: full hash missing for {len(lst)} out of {len(checkpoints_list)} models')
+    shared.log.info(f'Models list: hash missing={len(lst)} total={len(checkpoints_list)}')
     for ckpt in lst:
         ckpt.sha256 = hashes.sha256(ckpt.filename, f"checkpoint/{ckpt.name}")
         ckpt.shorthash = ckpt.sha256[0:10] if ckpt.sha256 is not None else None
@@ -887,7 +887,7 @@ def load_diffuser(checkpoint_info=None, already_loaded_state_dict=None, timer=No
                 shared.log.error(f'Failed loading {op}: {checkpoint_info.path} auto={err1} diffusion={err2}')
                 return
         elif os.path.isfile(checkpoint_info.path) and checkpoint_info.path.lower().endswith('.safetensors'):
-            diffusers_load_config["local_files_only"] = True
+            # diffusers_load_config["local_files_only"] = True
             diffusers_load_config["extract_ema"] = shared.opts.diffusers_extract_ema
             pipeline, model_type = detect_pipeline(checkpoint_info.path, op)
             if pipeline is None:

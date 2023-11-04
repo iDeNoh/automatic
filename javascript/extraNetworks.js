@@ -216,6 +216,18 @@ function applyStyles(styles) {
   return newStyles.join('|');
 }
 
+function quickApplyStyle() {
+  const tabname = getENActiveTab();
+  const btnApply = gradioApp().getElementById(`${tabname}_extra_apply`);
+  if (btnApply) btnApply.click();
+}
+
+function quickSaveStyle() {
+  const tabname = getENActiveTab();
+  const btnSave = gradioApp().getElementById(`${tabname}_extra_quicksave`);
+  if (btnSave) btnSave.click();
+}
+
 // init
 
 function setupExtraNetworksForTab(tabname) {
@@ -229,6 +241,7 @@ function setupExtraNetworksForTab(tabname) {
   const btnSave = gradioApp().getElementById(`${tabname}_extra_save`);
   const btnClose = gradioApp().getElementById(`${tabname}_extra_close`);
   const btnSort = gradioApp().getElementById(`${tabname}_extra_sort`);
+  const btnView = gradioApp().getElementById(`${tabname}_extra_view`);
   const btnModel = gradioApp().getElementById(`${tabname}_extra_model`);
   const btnApply = gradioApp().getElementById(`${tabname}_extra_apply`);
   const buttons = document.createElement('span');
@@ -239,9 +252,18 @@ function setupExtraNetworksForTab(tabname) {
   if (btnScan) buttons.appendChild(btnScan);
   if (btnSave) buttons.appendChild(btnSave);
   if (btnSort) buttons.appendChild(btnSort);
+  if (btnView) buttons.appendChild(btnView);
   if (btnClose) buttons.appendChild(btnClose);
   btnModel.onclick = () => btnModel.classList.toggle('toolbutton-selected');
   tabs.appendChild(buttons);
+
+  // details
+  const detailsImg = gradioApp().getElementById(`${tabname}_extra_details_img`);
+  const detailsClose = gradioApp().getElementById(`${tabname}_extra_details_close`);
+  if (detailsImg && detailsClose) {
+    detailsImg.title = 'Close details';
+    detailsImg.onclick = () => detailsClose.click();
+  }
 
   // search and description
   const div = document.createElement('div');

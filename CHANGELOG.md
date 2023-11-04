@@ -42,21 +42,28 @@ Some highlights: [OpenVINO](https://github.com/vladmandic/automatic/wiki/OpenVIN
     - **compile** option, thanks @disty0  
     - **chaiNNer** add high quality models from [Helaman](https://openmodeldb.info/users/helaman)  
   - redesigned **Progress bar** with full details on current operation  
-  - **Extra networks** sort by name, size, date, etc.  
   - new option: *settings -> images -> keep incomplete*  
     can be used to skip vae decode on aborted/skipped/interrupted image generations  
   - new option: *settings -> system paths -> models*  
     can be used to set custom base path for *all* models (previously only as cli option)  
   - remove external clone of items in `/repositories`  
-- **UI**
+- **UI**  
   - UI tweaks for default themes
   - UI switch core font in default theme to **noto-sans**  
     previously default font was simply *system-ui*, but it lead to too much variations between browsers and platforms  
+  - updated **Context menu**  
+    right-click on prompt or generate button
+- **Extra networks**  
+  - sort by name, size, date, etc.  
+  - switch between *gallery* and *list* views  
 - **Packages**
   - updated `diffusers` to 0.22.0, `transformers` to 4.34.1  
   - update **openvino**, thanks @disty0  
-  - update **ipex**, thanks @disty0  
   - update **directml**, @lshqqytiger  
+- **Compute**  
+  - **OpenVINO**:  
+    - updated to mainstream `torch` *2.1.0*  
+    - support for **ESRGAN** upscalers  
 - **Fixes**  
   - fix **freeu** for backend original and add it to xyz grid  
   - fix loading diffuser models in huggingface format from non-standard location  
