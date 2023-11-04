@@ -17,15 +17,14 @@ import modules.errors as errors
 from modules.processing import StableDiffusionProcessing, create_random_tensors
 import modules.prompt_parser_diffusers as prompt_parser_diffusers
 from modules.sd_hijack_hypertile import hypertile_set
-from modules.olive import OlivePipeline
 
 
 def process_diffusers(p: StableDiffusionProcessing, seeds, prompts, negative_prompts):
     results = []
     is_refiner_enabled = p.enable_hr and p.refiner_steps > 0 and p.refiner_start > 0 and p.refiner_start < 1 and shared.sd_refiner is not None
 
-    if isinstance(shared.sd_model, OlivePipeline):
-        shared.sd_model = shared.sd_model.optimize(p.width, p.height)
+    if hasattr(shared.sd_model, 'preprocess'):
+        shared.sd_model = shared.sd_model.preprocess(p.width, p.height, p.batch_size)
 
     if hasattr(p, 'init_images') and len(p.init_images) > 0:
         tgt_width, tgt_height = 8 * math.ceil(p.init_images[0].width / 8), 8 * math.ceil(p.init_images[0].height / 8)

@@ -163,7 +163,7 @@ def list_models():
     model_list = modelloader.load_models(model_path=model_path, model_url=None, command_path=shared.opts.ckpt_dir, ext_filter=ext_filter, download_name=None, ext_blacklist=[".vae.ckpt", ".vae.safetensors"])
     if shared.backend == shared.Backend.DIFFUSERS:
         model_list += modelloader.load_diffusers_models(model_path=os.path.join(models_path, 'Diffusers'), command_path=shared.opts.diffusers_dir, clear=True)
-        model_list += modelloader.load_diffusers_models(model_path=shared.opts.olive_sideloaded_models_path, command_path=shared.opts.olive_sideloaded_models_path, clear=False)
+        model_list += modelloader.load_diffusers_models(model_path=shared.opts.onnx_sideloaded_models_path, command_path=shared.opts.onnx_sideloaded_models_path, clear=False)
     for filename in sorted(model_list, key=str.lower):
         checkpoint_info = CheckpointInfo(filename)
         if checkpoint_info.name is not None:
@@ -853,15 +853,11 @@ def load_diffuser(checkpoint_info=None, already_loaded_state_dict=None, timer=No
                 diffusers_load_config['custom_pipeline'] = 'latent_consistency_txt2img'
 
         if 'ONNX' in shared.opts.diffusers_pipeline:
-            from modules.onnx import get_execution_provider_options
-            diffusers_load_config['provider'] = (shared.opts.onnx_execution_provider, get_execution_provider_options(),)
-            if shared.opts.diffusers_pipeline == 'ONNX Stable Diffusion with Olive':
-                try:
-                    from modules.olive import is_available as olive_is_available, OlivePipeline
-                    if olive_is_available: # Cannot know whether the model is optimized or not because it depends on h/w. If the user wants Olive, load the model using OlivePipeline. OlivePipeline.optimize will check right before generation starts.
-                        sd_model = OlivePipeline.from_pretrained(checkpoint_info.path)
-                except Exception:
-                    pass
+            from modules.onnx import OnnxAutoPipeline
+            if os.path.isdir(checkpoint_info.path):
+                sd_model = OnnxAutoPipeline.from_pretrained(checkpoint_info.path)
+            else:
+                sd_model = OnnxAutoPipeline.from_single_file(checkpoint_info.path)
 
         if sd_model is None and os.path.isdir(checkpoint_info.path):
             err1 = None

@@ -26,8 +26,7 @@ def list_crossattention():
 
 def get_pipelines():
     import diffusers
-    from modules.onnx import OnnxStableDiffusionPipeline
-    from modules.olive import OlivePipeline, is_available as is_olive_available
+    from modules.onnx import OnnxAutoPipeline
     from installer import log
     pipelines = {
         'Autodetect': None,
@@ -39,14 +38,12 @@ def get_pipelines():
         'Stable Diffusion XL Img2Img': getattr(diffusers, 'StableDiffusionXLImg2ImgPipeline', None),
         'Stable Diffusion XL Inpaint': getattr(diffusers, 'StableDiffusionXLInpaintPipeline', None),
         'Stable Diffusion XL Instruct': getattr(diffusers, 'StableDiffusionXLInstructPix2PixPipeline', None),
-        'ONNX Stable Diffusion': OnnxStableDiffusionPipeline,
-        'ONNX Stable Diffusion with Olive': OlivePipeline,
+        'ONNX Stable Diffusion': OnnxAutoPipeline,
+        'ONNX Stable Diffusion with Olive': OnnxAutoPipeline,
         'Custom Diffusers Pipeline': getattr(diffusers, 'DiffusionPipeline', None),
         # 'Test': getattr(diffusers, 'TestPipeline', None),
         # 'Kandinsky V1', 'Kandinsky V2', 'DeepFloyd IF', 'Shap-E', 'Kandinsky V1 Img2Img', 'Kandinsky V2 Img2Img', 'DeepFloyd IF Img2Img', 'Shap-E Img2Img',
     }
-    if not is_olive_available:
-        del pipelines['ONNX Stable Diffusion with Olive']
     for k, v in pipelines.items():
         if k != 'Autodetect' and v is None:
             log.error(f'Not available: pipeline={k} diffusers={diffusers.__version__} path={diffusers.__file__}')
